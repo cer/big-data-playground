@@ -7,15 +7,12 @@ class CountryRankingsJob(args : Args) extends Job(args) {
 
   def ignoreRowsMissingFields(expectedSize : Int)(args: TupleEntry ) = args.size == expectedSize
 
-  Tsv(args("input1"))
-    .filter('*) (ignoreRowsMissingFields (5) _)
-    .mapTo('* -> ('user_id, 'country)) { fields : (String, String, String, String, String) => (fields._1, fields._4) }
-    .joinWithLarger('user_id -> 'user_id,
-        Tsv(args("input2"))
-          .filter('*) (ignoreRowsMissingFields (6) _)
-          .mapTo ('* -> ('user_id, 'traname)) {  fields : (String, String, String, String, String, String) => (fields._1, fields._6) })
-    .groupBy(('country, 'traname)) { _.size('plays) }
-    .groupBy('country) { _.sortBy('plays).reverse.mkString('traname -> 'rankedtracks, "|") }
+  // ('user_id, 'timestamp, 'art_id, 'art_name, 'track_id, 'track_name, 'gender, 'age, 'country, 'signup)
+
+  Tsv(args("input"))
+    .mapTo('* -> ('track_name, 'country)) { fields : (String, String, String, String, String, String, String, String, String, String) => (fields._6, fields._9) }
+    .groupBy(('country, 'track_name)) { _.size('plays) }
+    .groupBy('country) { _.sortBy('plays).reverse.mkString('track_name -> 'rankedtracks, "|") }
     .flatMap('rankedtracks -> ('track, 'ranking)) { rankedTracks : String =>  rankedTracks.split("\\|").zipWithIndex }
     .project(('country, 'track, 'ranking))
     .write( Tsv( args("output") ) )
