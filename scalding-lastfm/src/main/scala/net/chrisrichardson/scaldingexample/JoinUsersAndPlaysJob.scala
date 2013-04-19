@@ -1,11 +1,10 @@
 package net.chrisrichardson.scaldingexample
 
 import com.twitter.scalding._
-import cascading.tuple.TupleEntry
+
+import JobUtils._
 
 class JoinUsersAndPlaysJob(args : Args) extends Job(args) {
-
-  def ignoreRowsMissingFields(expectedSize : Int)(args: TupleEntry ) = args.size == expectedSize
 
   Tsv(args("input1"))
     .filter('*) (ignoreRowsMissingFields (5) _)

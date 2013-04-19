@@ -1,11 +1,9 @@
 package net.chrisrichardson.scaldingexample
 
 import com.twitter.scalding._
-import cascading.tuple.TupleEntry
+
 
 class CountryRankingsJob(args : Args) extends Job(args) {
-
-  def ignoreRowsMissingFields(expectedSize : Int)(args: TupleEntry ) = args.size == expectedSize
 
   // ('user_id, 'timestamp, 'art_id, 'art_name, 'track_id, 'track_name, 'gender, 'age, 'country, 'signup)
 
